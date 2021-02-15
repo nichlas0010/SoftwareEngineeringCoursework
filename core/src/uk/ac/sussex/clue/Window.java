@@ -7,17 +7,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.DelayedRemovalArray;
-
-import java.util.ArrayList;
 
 public class Window extends ScreenAdapter {
+    // the game's main controller
     MainController mc;
+    // spritebatch we're using to draw on the screen
     SpriteBatch batch;
+    // Our font
     BitmapFont font;
 
     public Window(MainController mc) {

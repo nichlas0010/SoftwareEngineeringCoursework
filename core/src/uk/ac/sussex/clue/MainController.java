@@ -10,11 +10,16 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainController extends Game {
 
-	boolean test = false;
-	Viewport viewport;
-	Camera camera;
-	int volume = 50;
-	
+	// The viewport we're using, see libgdx viewport
+	private Viewport viewport;
+	// The camera we're using, see libgdx camera
+	private Camera camera;
+	// The volume of the programme in percent, 50% by default.
+	private int volume = 50;
+
+	/**
+	 * Functions as the constructor for the class, is called by the desktop launcher.
+	 */
 	@Override
 	public void create() {
 		camera = new OrthographicCamera(1920, 1080);
@@ -23,6 +28,13 @@ public class MainController extends Game {
 		this.setScreen(new Menu(this));
 	}
 
+	/**
+	 *
+	 * Is called by our Inputhandler whenever a key is pressed.
+	 * If the key isn't used by the controller, it's passed to the active screen.
+	 *
+	 * @param keycode which key is pressed, see {@link com.badlogic.gdx.Input.Buttons}
+	 */
 	public void keyDown(int keycode){
 
 		// This is where we handle it if the game needs the input.
@@ -44,19 +56,44 @@ public class MainController extends Game {
 		}
 	}
 
+	/**
+	 * Gets the maincontroller's viewport.
+	 *
+	 * @return The viewport our main controller is set to use
+	 * @see com.badlogic.gdx.utils.viewport.Viewport
+	 */
 	public Viewport getViewport() {
 		return viewport;
 	}
 
+	/**
+	 * Gets the maincontroller's camera.
+	 *
+	 * @return The camera our main controller is set to use
+	 * @see com.badlogic.gdx.graphics.Camera
+	 */
 	public Camera getCamera() {
 		return camera;
 	}
 
+	/**
+	 * Returns the volume of the programme, as a percentage.
+	 * @return the volume of the programme, in percent
+	 */
 	public int getVolume() {
 		return volume;
 	}
 
+	/**
+	 * Sets the volume of the programme (in percent) to the given value. Clamps the value between 0 and 100.
+	 * @param volume the volume the game should be set to
+	 */
 	public void setVolume(int volume) {
+		if(volume < 0) {
+			volume = 0;
+		} else if(volume > 100) {
+			volume = 100;
+		}
 		this.volume = volume;
 	}
 }

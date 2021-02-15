@@ -11,15 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Menu extends Window {
-    boolean isOptions = false;
 
-    TextButton newGame;
-    TextButton options;
-    TextButton exitGame;
-    TextButton fullscreen;
-    TextButton exitOptions;
-
-    Slider audioSlider;
+    // Whether or not we're in the options menu
+    private boolean isOptions = false;
+    // Our newgame button
+    private TextButton newGame;
+    // Our options button
+    private TextButton options;
+    // our exit game button
+    private TextButton exitGame;
+    // our fullscreen button
+    private TextButton fullscreen;
+    // our exit options button
+    private TextButton exitOptions;
+    // the slider for the audio
+    private Slider audioSlider;
 
     public Menu(MainController mc) {
         super(mc);
@@ -37,7 +43,7 @@ public class Menu extends Window {
             fullscreen.setText(Gdx.graphics.isFullscreen()?"Fullscreen: On":"Fullscreen: Off");
             fullscreen.draw(batch, 1);
             exitOptions.draw(batch, 1);
-            font.draw(batch, "Audio volume: " + mc.volume, 775, 525);
+            font.draw(batch, "Audio volume: " + mc.getVolume(), 775, 525);
             audioSlider.draw(batch, 1);
             audioSlider.setDisabled(false);
             mc.setVolume((int) audioSlider.getValue());
