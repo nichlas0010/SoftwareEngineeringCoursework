@@ -1,33 +1,62 @@
 package uk.ac.sussex.clue;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class MainController extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+public class MainController extends Game {
+
+	boolean test = false;
+	Viewport viewport;
+	Camera camera;
+	int volume = 50;
 	
 	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+	public void create() {
+		camera = new OrthographicCamera(1920, 1080);
+		viewport = new ExtendViewport(1920, 1080, camera);
+		Gdx.input.setInputProcessor(new InputHandler(this));
+		this.setScreen(new Menu(this));
 	}
 
-	@Override
-	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 100, 100);
-		batch.end();
+	public void keyDown(int keycode){
+
+		// This is where we handle it if the game needs the input.
+		boolean isUsed = false;
+		if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) && keycode == Input.Keys.ENTER) {
+			isUsed = true;
+			if(Gdx.graphics.isFullscreen()) {
+				Gdx.graphics.setWindowedMode(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			} else {
+				Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+			}
+		}
+
+
+		// This is where we send it down the chain if it's not been used.
+		if(!isUsed) {
+			Window currentWindow = (Window) screen;
+			currentWindow.keyDown(keycode);
+		}
 	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		img.dispose();
+
+	public Viewport getViewport() {
+		return viewport;
+	}
+
+	public Camera getCamera() {
+		return camera;
+	}
+
+	public int getVolume() {
+		return volume;
+	}
+
+	public void setVolume(int volume) {
+		this.volume = volume;
 	}
 }

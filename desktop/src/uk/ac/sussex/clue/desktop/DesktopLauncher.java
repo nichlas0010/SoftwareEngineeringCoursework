@@ -13,8 +13,7 @@ public class DesktopLauncher {
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.fullscreen = true;
-		config.height = (int) dimension.getHeight();
-		config.width = (int) dimension.getWidth();
+		config.height = 1080;
 		config.width = 1920;
 		config.title = "Clue!";
 		new LwjglApplication(new MainController(), config);
