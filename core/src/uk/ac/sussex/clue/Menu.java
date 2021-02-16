@@ -66,7 +66,7 @@ public class Menu extends Window {
         style.font.setColor(Color.WHITE);
 
         // Create our menu buttons
-        newGame = new TextButton("New Game", style);
+        newGame = new TextButton(""+Gdx.graphics.getHeight()+" "+Gdx.graphics.getWidth(), style);
         newGame.setPosition(960-newGame.getWidth()/2, 530);
 
         options = new TextButton("Options", style);

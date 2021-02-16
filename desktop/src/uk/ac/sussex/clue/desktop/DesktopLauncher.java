@@ -15,7 +15,7 @@ public class DesktopLauncher {
 		config.fullscreen = true;
 		config.height = 1080;
 		config.width = 1920;
-		config.title = "Clue!";
+		config.title = "Clue";
 		new LwjglApplication(new MainController(), config);
 	}
 }
