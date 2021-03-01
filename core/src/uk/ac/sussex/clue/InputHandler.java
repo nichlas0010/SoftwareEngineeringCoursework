@@ -4,16 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class InputHandler extends Stage {
-    // Our main controller.
-    private MainController mc;
 
     /**
-     * Calls the superfunction, and sets our mc variable
-     * @param mc The game's main controller.
+     * Calls the superfunction with our maincontroller's viewport
      */
-    public InputHandler(MainController mc) {
-        super(mc.getViewport());
-        this.mc = mc;
+    public InputHandler() {
+        super(MainController.instance.getViewport());
     }
 
     /**
@@ -23,7 +19,7 @@ public class InputHandler extends Stage {
      * @see uk.ac.sussex.clue.MainController#keyDown(int) 
      */
     public boolean keyDown (int keycode) {
-        mc.keyDown(keycode);
+        MainController.instance.keyDown(keycode);
         return false;
     }
 

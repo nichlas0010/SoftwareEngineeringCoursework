@@ -27,15 +27,11 @@ public class Menu extends Window {
     // the slider for the audio
     private Slider audioSlider;
 
-    public Menu(MainController mc) {
-        super(mc);
-    }
-
     @Override
     public void render (float delta) {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        batch.setProjectionMatrix(mc.getCamera().combined);
+        batch.setProjectionMatrix(MainController.instance.getCamera().combined);
 
 
         batch.begin();
@@ -43,10 +39,10 @@ public class Menu extends Window {
             fullscreen.setText(Gdx.graphics.isFullscreen()?"Fullscreen: On":"Fullscreen: Off");
             fullscreen.draw(batch, 1);
             exitOptions.draw(batch, 1);
-            font.draw(batch, "Audio volume: " + mc.getVolume(), 775, 525);
+            font.draw(batch, "Audio volume: " + MainController.instance.getVolume(), 775, 525);
             audioSlider.draw(batch, 1);
             audioSlider.setDisabled(false);
-            mc.setVolume((int) audioSlider.getValue());
+            MainController.instance.setVolume((int) audioSlider.getValue());
         } else {
             newGame.draw(batch, 1);
             options.draw(batch, 1);
@@ -66,7 +62,7 @@ public class Menu extends Window {
         style.font.setColor(Color.WHITE);
 
         // Create our menu buttons
-        newGame = new TextButton(""+Gdx.graphics.getHeight()+" "+Gdx.graphics.getWidth(), style);
+        newGame = new TextButton("New Game", style);
         newGame.setPosition(960-newGame.getWidth()/2, 530);
 
         options = new TextButton("Options", style);
@@ -83,7 +79,7 @@ public class Menu extends Window {
 
         audioSlider = new Slider(0, 100, 1, false, new Skin(Gdx.files.internal("data/skin.json")));
         audioSlider.setPosition(775, 475);
-        audioSlider.setValue((float) mc.getVolume());
+        audioSlider.setValue((float) MainController.instance.getVolume());
 
         exitGame.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -104,7 +100,7 @@ public class Menu extends Window {
         newGame.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if(!isOptions) {
-                    mc.setScreen(new NewGame(mc));
+                    MainController.instance.setScreen(new NewGame());
                 }
             }
         });

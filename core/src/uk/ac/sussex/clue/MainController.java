@@ -16,16 +16,19 @@ public class MainController extends Game {
 	private Camera camera;
 	// The volume of the programme in percent, 50% by default.
 	private int volume = 50;
+	// The instance of our maincontroller. Any class that needs to access the maincontroller can use MainController.instance to do so.
+	public static MainController instance;
 
 	/**
 	 * Functions as the constructor for the class, is called by the desktop launcher.
 	 */
 	@Override
 	public void create() {
+		MainController.instance = this;
 		camera = new OrthographicCamera(1920, 1080);
 		viewport = new ExtendViewport(1920, 1080, camera);
-		Gdx.input.setInputProcessor(new InputHandler(this));
-		this.setScreen(new Menu(this));
+		Gdx.input.setInputProcessor(new InputHandler());
+		this.setScreen(new Menu());
 	}
 
 	/**
