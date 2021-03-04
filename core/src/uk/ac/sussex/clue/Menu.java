@@ -1,9 +1,12 @@
 package uk.ac.sussex.clue;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -100,7 +103,7 @@ public class Menu extends Window {
         newGame.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if(!isOptions) {
-                    MainController.instance.setScreen(new NewGame());
+                    MainController.instance.setScreen(new ClueGame("sp;wc"));
                 }
             }
         });

@@ -25,12 +25,12 @@ public class InputHandler extends Stage {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        int height = Gdx.graphics.getHeight();
-        int width = Gdx.graphics.getWidth();
-        System.out.println(screenX);
-        System.out.println(width);
-        System.out.println(screenY);
-        System.out.println(height);
+        //int height = Gdx.graphics.getHeight();
+        //int width = Gdx.graphics.getWidth();
+        //System.out.println(screenX);
+        //System.out.println(width);
+        //System.out.println(screenY);
+        //System.out.println(height);
         return super.touchDown(screenX, screenY, pointer, button);
     }
 }
