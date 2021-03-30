@@ -32,6 +32,9 @@ public class Menu extends Window {
 
     @Override
     public void render (float delta) {
+        if(!MainController.instance.getScreen().equals(this)) {
+            System.out.println("FFFFFF");
+        }
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(MainController.instance.getCamera().combined);
@@ -103,7 +106,7 @@ public class Menu extends Window {
         newGame.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 if(!isOptions) {
-                    MainController.instance.setScreen(new ClueGame("sp;wc"));
+                    MainController.instance.setScreen(new NewGame());
                 }
             }
         });
@@ -139,18 +142,13 @@ public class Menu extends Window {
 
     @Override
     public void hide() {
-        super.hide();
         exitGame.remove();
         options.remove();
         newGame.remove();
         fullscreen.remove();
         audioSlider.remove();
         exitOptions.remove();
-    }
-
-    @Override
-    public void dispose () {
-        batch.dispose();
+        super.hide();
     }
 
     @Override

@@ -15,11 +15,14 @@ public class Player {
     private boolean isAI = false;
     // The card which represents our character. Will be useful to be able to connect the two.
     private Card character;
+    // Tile we're int
+    private Tile currentSpace;
 
     public Player(Card c, boolean isAI) {
         character = c;
         this.isAI = isAI;
         cards = new ArrayList<Card>();
+        colour = c.getColour();
     }
 
     public Color getColour() {
@@ -28,5 +31,13 @@ public class Player {
 
     public Card getCharacter() {
         return character;
+    }
+
+    public Tile getTile() {
+        return currentSpace;
+    }
+
+    public void setTile(Tile t) {
+        currentSpace = t;
     }
 }

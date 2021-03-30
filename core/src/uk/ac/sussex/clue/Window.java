@@ -30,4 +30,9 @@ public class Window extends ScreenAdapter {
         i.addActor(a);
     }
 
+    @Override
+    public void hide() {
+        batch.dispose();
+    }
+
 }

@@ -58,6 +58,9 @@ The same holds true for the board.png image, although you should be more careful
 The board.png file isn't used to determine where tiles are, so if you aren't careful
 you might cause a mis-match between the tiles and the graphical representation.
 
+As a rule of thumb, each tile in-game should correspond to 32x32 pixels in the image.
+So a 4x4 board would be 128x128
+
 ## I want to mod, what do I do?
 
 Depends on what you want to modify. If you want to modify the characters/weapons

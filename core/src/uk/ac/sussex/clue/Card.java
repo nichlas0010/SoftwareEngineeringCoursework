@@ -1,5 +1,6 @@
 package uk.ac.sussex.clue;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Card {
@@ -29,6 +30,11 @@ public class Card {
     // Which specific card we are
     private String card;
 
+    // If we're a character, what colour we are
+    private Color colour;
+    // If we're a room, and which one we are
+    private Rooms roomtype;
+
     public Card(Weapons w) {
         this(w.name().toLowerCase());
         type = Types.WEAPON;
@@ -37,17 +43,19 @@ public class Card {
     public Card(Characters c) {
         this(c.name().toLowerCase());
         type = Types.CHARACTER;
+        colour = Color.valueOf(Gdx.files.internal(c.name().toLowerCase()+".txt").readString().split("\n")[1]);
     }
 
     public Card(Rooms r) {
         this(r.name().toLowerCase());
         type = Types.ROOM;
+        roomtype = r;
     }
 
     public Card(String s) {
         card = s;
         image = new Texture(Gdx.files.internal(s+".png"));
-        name = Gdx.files.internal(s+".txt").readString();
+        name = Gdx.files.internal(s+".txt").readString().split("\n")[0];
     }
 
     public boolean isType(Types t) {
@@ -56,5 +64,17 @@ public class Card {
 
     public String getCard() {
         return card;
+    }
+
+    public Rooms getRoomtype() {
+        return roomtype;
+    }
+
+    public Texture getImage() {
+        return image;
+    }
+
+    public Color getColour() {
+        return colour;
     }
 }
