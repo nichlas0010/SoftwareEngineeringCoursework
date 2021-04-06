@@ -35,4 +35,8 @@ public class Window extends ScreenAdapter {
         batch.dispose();
     }
 
+    public BitmapFont getFont() {
+        return font;
+    }
+
 }

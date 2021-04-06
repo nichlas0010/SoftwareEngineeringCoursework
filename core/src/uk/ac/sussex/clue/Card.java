@@ -77,4 +77,8 @@ public class Card {
     public Color getColour() {
         return colour;
     }
+
+    public String getName() {
+        return name;
+    }
 }

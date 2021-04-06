@@ -15,7 +15,9 @@ public class Tile {
     public void onEnter(Player player, boolean isPulled) {
         this.player = player;
         player.setTile(this);
-        return;
+        if(!isPulled) {
+            screen.isInRoom();
+        }
     }
 
     public boolean canEnter() {
@@ -57,7 +59,7 @@ public class Tile {
     }
 
     public void clicked(Player p) {
-        if(!canEnter()) {
+        if(!canEnter() || !screen.getGameState().canMove()) {
             return;
         }
         p.getTile().onLeave();

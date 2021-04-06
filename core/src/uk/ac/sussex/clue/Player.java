@@ -40,4 +40,8 @@ public class Player {
     public void setTile(Tile t) {
         currentSpace = t;
     }
+
+    public void giveCard(Card c) {
+        cards.add(c);
+    }
 }

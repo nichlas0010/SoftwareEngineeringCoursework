@@ -59,4 +59,14 @@ public class Door extends Tile {
         }
         return null;
     }
+
+    @Override
+    public void clicked(Player p) {
+        if(!p.getTile().equals(getOpposite()) || !screen.getGameState().canMove()) {
+            return;
+        }
+        p.getTile().onLeave();
+        onEnter(p, false);
+        return;
+    }
 }

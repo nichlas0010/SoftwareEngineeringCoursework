@@ -42,7 +42,7 @@ public class Room extends Tile {
         if(isPulled) {
             return;
         }
-        // TODO: make the player do a thing
+        screen.getGameState().setState(GameState.State.CHOICE);
     }
 
     public Card.Rooms getRoomtype() {
@@ -59,5 +59,18 @@ public class Room extends Tile {
         if(!doors.contains(d)) {
             doors.add(d);
         }
+    }
+
+    public void clicked(Player p) {
+        if(!getMoves().contains(p.getTile()) || !screen.getGameState().canMove()) {
+            return;
+        }
+        p.getTile().onLeave();
+        onEnter(p, false);
+        return;
+    }
+
+    public Card getCard() {
+        return card;
     }
 }
