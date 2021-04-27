@@ -162,11 +162,6 @@ public class GameState {
                 screen.addActor(die1);
                 screen.addActor(die2);
                 break;
-            case MOVING:
-                die1.remove();
-                die2.remove();
-                moves = dice[0]+dice[1];
-                break;
             case CHOICE:
                 screen.addActor(guess);
                 screen.addActor(accuse);
@@ -343,6 +338,9 @@ public class GameState {
         } else {
             Countdown -= 1;
             if(Countdown < 1) {
+                die1.remove();
+                die2.remove();
+                moves = dice[0]+dice[1];
                 setState(State.MOVING);
             }
         }
@@ -625,8 +623,11 @@ public class GameState {
     }
 
     public void pressEscape() {
-        if(state.equals(State.JOURNAL) || state.equals(State.CARDS)) {
+        if(state.equals(State.JOURNAL)) {
+            screen.getCurrentPlayer().getNotes().remove();
             setState(State.MOVING);
+        } else if(state.equals(State.CARDS)) {
+           setState(State.MOVING);
         } else if(state.equals(State.MOVING)) {
             screen.exitGame();
         }
