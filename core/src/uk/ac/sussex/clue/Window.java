@@ -14,8 +14,7 @@ public class Window extends ScreenAdapter {
     // Our font
     BitmapFont font;
 
-    @Override
-    public void show () {
+    public Window() {
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("data/font_large.fnt"), Gdx.files.internal("data/font_large.png"), false);
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);

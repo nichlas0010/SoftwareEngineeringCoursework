@@ -1,6 +1,7 @@
 package uk.ac.sussex.clue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -44,6 +45,10 @@ public class ClueGame extends Window {
     private ArrayList<Card> characters = new ArrayList<>();
     // rooms
     private ArrayList<Card> roomCards = new ArrayList<>();
+    // Journal image
+    private Image journalButton;
+    // Cards image
+    private Image cardsButton;
 
 
     public ClueGame(String config) {
@@ -105,6 +110,7 @@ public class ClueGame extends Window {
             }
         });
         addActor(boardImage);
+        setupUI();
 
         gameState.setupCards();
 
@@ -379,12 +385,17 @@ public class ClueGame extends Window {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(1, 1, 1, 0.0F);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.setProjectionMatrix(MainController.instance.getCamera().combined);
         batch.begin();
         boardImage.draw(batch, 50);
+        font.setColor(Color.BLACK);
         font.draw(batch, "Current player: " + getCurrentPlayer().getCharacter().getName(), 100, 150);
+        font.draw(batch, "Press esc to return", 1300, 150);
+        journalButton.draw(batch, 50);
+        cardsButton.draw(batch, 50);
         batch.end();
 
         int x0 = (int) boardImage.getX();
@@ -434,7 +445,12 @@ public class ClueGame extends Window {
     }
 
     public void nextPlayer() {
+        int i = 0;
         currentPlayer = players.get((players.indexOf(currentPlayer) + 1) % players.size());
+        while(currentPlayer.isDidAccuse() && i < players.size()) {
+            currentPlayer = players.get((players.indexOf(currentPlayer) + 1) % players.size());
+            i++;
+        }
     }
 
     public Player getCurrentPlayer() {
@@ -460,11 +476,11 @@ public class ClueGame extends Window {
             currentPlayer.giveCard(c);
             nextPlayer();
         }
-        for(Card c : weapons.subList(1, characters.size())) {
+        for(Card c : weapons.subList(1, weapons.size())) {
             currentPlayer.giveCard(c);
             nextPlayer();
         }
-        for(Card c : roomCards.subList(1, characters.size())) {
+        for(Card c : roomCards.subList(1, roomCards.size())) {
             currentPlayer.giveCard(c);
             nextPlayer();
         }
@@ -490,6 +506,10 @@ public class ClueGame extends Window {
         return cards;
     }
 
+    public ArrayList<Card> getMurderCards() {
+        return murderCards;
+    }
+
     public void movePlayer(Card c) {
         for(Player p : players) {
             if(p.getCharacter().equals(c) && !p.equals(currentPlayer) && !p.getTile().equals(currentPlayer.getTile())) {
@@ -497,5 +517,55 @@ public class ClueGame extends Window {
                 currentPlayer.getTile().onEnter(p, true);
             }
         }
+    }
+
+    @Override
+    public void keyDown(int keycode) {
+        if(keycode == Input.Keys.SPACE) {
+            gameState.pressContinue();
+        } else if(keycode == Input.Keys.ESCAPE) {
+            gameState.pressEscape();
+        }
+    }
+
+    public void setupUI() {
+        journalButton = new Image(new Texture(Gdx.files.internal("journal.png")));
+        journalButton.setX(0);
+        journalButton.setY(680);
+        journalButton.setWidth(192);
+        journalButton.setHeight(256);
+        journalButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if(gameState.getState().equals(State.MOVING)) {
+                    gameState.setState(State.JOURNAL);
+                }
+            }
+        });
+
+        cardsButton = new Image(new Texture(Gdx.files.internal("cards.png")));
+        cardsButton.setX(1728);
+        cardsButton.setY(680);
+        cardsButton.setWidth(192);
+        cardsButton.setHeight(256);
+        cardsButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                if(gameState.getState().equals(State.MOVING)) {
+                    gameState.setState(State.CARDS);
+                }
+            }
+        });
+
+        // Create our textbutton style
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = font;
+
+        addActor(cardsButton);
+        addActor(journalButton);
+
+
+    }
+
+    public void exitGame() {
+        MainController.instance.setScreen(new Menu());
     }
 }
