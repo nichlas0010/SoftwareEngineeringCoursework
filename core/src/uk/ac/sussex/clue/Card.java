@@ -34,6 +34,8 @@ public class Card {
     private Color colour;
     // If we're a room, and which one we are
     private Rooms roomtype;
+    // If we're a chjaracter, which character we are
+    private Characters character;
 
     public Card(Weapons w) {
         this(w.name().toLowerCase());
@@ -44,6 +46,7 @@ public class Card {
         this(c.name().toLowerCase());
         type = Types.CHARACTER;
         colour = Color.valueOf(Gdx.files.internal(c.name().toLowerCase()+".txt").readString().split("\n")[1]);
+        character = c;
     }
 
     public Card(Rooms r) {
@@ -80,5 +83,9 @@ public class Card {
 
     public String getName() {
         return name;
+    }
+
+    public Characters getCharacter() {
+        return character;
     }
 }

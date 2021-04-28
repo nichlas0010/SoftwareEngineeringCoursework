@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -29,18 +30,21 @@ public class Menu extends Window {
     private TextButton exitOptions;
     // the slider for the audio
     private Slider audioSlider;
+    // our Background Image
+    private Image backgroundImage = new Image(new Texture(Gdx.files.internal("menuBackground.png")));
 
     @Override
     public void render (float delta) {
         if(!MainController.instance.getScreen().equals(this)) {
             System.out.println("FFFFFF");
         }
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.setProjectionMatrix(MainController.instance.getCamera().combined);
 
 
         batch.begin();
+        backgroundImage.draw(batch, 1);
         if(isOptions) {
             fullscreen.setText(Gdx.graphics.isFullscreen()?"Fullscreen: On":"Fullscreen: Off");
             fullscreen.draw(batch, 1);
@@ -66,6 +70,9 @@ public class Menu extends Window {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = font;
         style.font.setColor(Color.WHITE);
+
+        backgroundImage.setPosition(0, 0);
+        backgroundImage.setSize(1920, 1080);
 
         // Create our menu buttons
         newGame = new TextButton("New Game", style);

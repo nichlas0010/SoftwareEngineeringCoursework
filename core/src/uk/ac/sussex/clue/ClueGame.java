@@ -49,9 +49,14 @@ public class ClueGame extends Window {
     private Image journalButton;
     // Cards image
     private Image cardsButton;
+    // Our background image
+    private Image backgroundImage = new Image(new Texture(Gdx.files.internal("gameBackground.png")));;
 
 
     public ClueGame(String config) {
+
+        backgroundImage.setPosition(0, 0);
+        backgroundImage.setSize(1920, 1080);
 
         for(Card.Characters c : Card.Characters.values()) {
             Card card = new Card(c);
@@ -390,6 +395,7 @@ public class ClueGame extends Window {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.setProjectionMatrix(MainController.instance.getCamera().combined);
         batch.begin();
+        backgroundImage.draw(batch, 1);
         boardImage.draw(batch, 50);
         font.setColor(Color.BLACK);
         font.draw(batch, "Current player: " + getCurrentPlayer().getCharacter().getName(), 100, 150);
