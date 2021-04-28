@@ -9,6 +9,10 @@ Below you can see a legend of what each character corresponds to:
 
 t - Tile that players can walk on
 
+b - A reroll tile, allows the user to roll again by stepping on it
+
+e - A free suggestion tile, allows to user to make a free guess by stepping on it
+
 space - empty, no tile. Simply there as a structural guide
 
 \> - door that can be entered from the left

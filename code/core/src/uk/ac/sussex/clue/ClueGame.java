@@ -170,6 +170,12 @@ public class ClueGame extends Window {
                     case 't':
                         board[i][ii] = new Tile(this);
                         break;
+                    case 'b':
+                        board[i][ii] = new Rollagain(this);
+                        break;
+                    case 'e':
+                        board[i][ii] = new Freesuggestion(this);
+                        break;
                     case '<':
                         board[i][ii] = new Door(this, Door.directions.LEFT, ii, i);
                         break;

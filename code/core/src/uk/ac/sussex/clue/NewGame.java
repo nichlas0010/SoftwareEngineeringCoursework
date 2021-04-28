@@ -155,6 +155,7 @@ public class NewGame extends Window {
         backgroundImage.draw(batch, 1);
 
         for(Card c : images.keySet()) {
+            font.draw(batch, c.getName(), images.get(c).getX(), 850);
             images.get(c).draw(batch, 50);
             boxes.get(c).get(0).draw(batch, 50);
             boxes.get(c).get(1).draw(batch, 50);
