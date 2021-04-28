@@ -66,4 +66,8 @@ public class Tile {
         onEnter(p, false);
         return;
     }
+
+    public void reset() {
+        return;
+    }
 }

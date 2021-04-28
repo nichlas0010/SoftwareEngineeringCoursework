@@ -50,7 +50,9 @@ public class ClueGame extends Window {
     // Cards image
     private Image cardsButton;
     // Our background image
-    private Image backgroundImage = new Image(new Texture(Gdx.files.internal("gameBackground.png")));;
+    private Image backgroundImage = new Image(new Texture(Gdx.files.internal("gameBackground.png")));
+    // Whether or not we've begun. Used for resetting tiles after a turn
+    private boolean hasBegun = false;
 
 
     public ClueGame(String config) {
@@ -120,6 +122,7 @@ public class ClueGame extends Window {
         gameState.setupCards();
 
         currentPlayer = players.get(players.size()-1);
+        hasBegun = true;
 
     }
 
@@ -457,6 +460,15 @@ public class ClueGame extends Window {
     }
 
     public void nextPlayer() {
+
+        if(hasBegun) {
+            for(Tile[] array : board) {
+                for(Tile tile : array) {
+                    tile.reset();
+                }
+            }
+        }
+
         int i = 0;
         currentPlayer = players.get((players.indexOf(currentPlayer) + 1) % players.size());
         while(currentPlayer.isDidAccuse() && i < players.size()) {
