@@ -83,7 +83,7 @@ public class ClueGame extends Window {
         String[] configs = config.split(";");
         for(String s : configs) {
             // Get the first symbol to determine the character, then make them a computer if there's a C in there
-            players.add(new Player(getCharacterFromSymbol(s.substring(0, 1)), s.contains("c")));
+            players.add(new Player(getCharacterFromSymbol(s.substring(0, 1)), s.contains("c"), this));
         }
         currentPlayer = players.get(0);
         giveCards();

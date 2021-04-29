@@ -73,6 +73,8 @@ public class GameState {
     private boolean reRolling = false;
     // whether we're extra-guessing
     private boolean reGuessing = false;
+    // Our card that they returned along with the returned image
+    private Card returnCard;
 
 
 
@@ -238,6 +240,9 @@ public class GameState {
                     if(isWaiting) {
                         setState(State.GIVECARD);
                     } else {
+                        if(screen.getCurrentPlayer().isAI()) {
+                            screen.getCurrentPlayer().weKnowTheCards(guesses);
+                        }
                         if(reGuessing && moves > 0) {
                             setState(State.MOVING);
                         } else {
@@ -271,6 +276,7 @@ public class GameState {
                 break;
             case GIVECARD:
                 index = 0;
+                returncards.clear();
                 for(final Card c : guesses) {
                     if(actingPlayer.getCards().contains(c)) {
                         Image i = new Image(c.getImage());
@@ -287,9 +293,12 @@ public class GameState {
                                 returnImage.setHeight(256);
                                 returnImage.setX(796);
                                 returnImage.setY(400);
+                                returnCard = c;
                                 setState(State.SEECARD);
                             }
                         });
+
+                        screen.addActor(i);
                     }
                 }
                 break;
@@ -333,6 +342,11 @@ public class GameState {
                 die1.setDrawable(diceTextures.get(dice[0]-1));
                 die2.setDrawable(diceTextures.get(dice[1]-1));
 
+                if(screen.getCurrentPlayer().isAI()) {
+                    Countdown = 100;
+                    hasRolled = true;
+                }
+
 
             }
         } else {
@@ -357,6 +371,18 @@ public class GameState {
         drawBackground(batch);
         guess.draw(batch, 50);
         accuse.draw(batch, 50);
+
+        if(screen.getCurrentPlayer().isAI()) {
+            Image i;
+            if(screen.getCurrentPlayer().doWeAccuse()) {
+                i = accuse;
+            } else {
+                i = guess;
+            }
+
+            ClickListener listener = (ClickListener) i.getListeners().get(0);
+            listener.clicked(new InputEvent(), 0, 0);
+        }
     }
 
     public void setupDice() {
@@ -469,12 +495,13 @@ public class GameState {
             });
         }
 
+        int x = 0;
         for(Card c : screen.getRoomCards()) {
             final Image i = cards.get(c);
-            int x = 608 + (screen.getRoomCards().indexOf(c) % 3 * 256);
-            int y = screen.getRoomCards().indexOf(c) / 3F < 1 ? 300 : 600;
-            i.setY(y);
-            i.setX(x);
+            int y = Math.floorDiv(x, 3);
+            i.setY(100+300*y);
+            i.setX(600+(x % 3)*256);
+            x++;
             i.setHeight(256);
             i.setWidth(192);
 
@@ -499,6 +526,12 @@ public class GameState {
         for(Card c : screen.getCharacters()) {
             cards.get(c).draw(batch, 50);
         }
+
+        // let the AI pick a card
+        if(screen.getCurrentPlayer().isAI()) {
+            Card c = screen.getCurrentPlayer().pickCard(Card.Types.CHARACTER);
+            clickCard(c);
+        }
     }
 
     public void renderGuessWeapon(Batch batch) {
@@ -506,12 +539,24 @@ public class GameState {
         for(Card c : screen.getWeapons()) {
             cards.get(c).draw(batch, 50);
         }
+
+        // let the AI pick a card
+        if(screen.getCurrentPlayer().isAI()) {
+            Card c = screen.getCurrentPlayer().pickCard(Card.Types.WEAPON);
+            clickCard(c);
+        }
     }
 
     public void renderGuessRoom(Batch batch) {
         drawBackground(batch);
         for(Card c : screen.getRoomCards()) {
             cards.get(c).draw(batch, 50);
+        }
+
+        // let the AI pick a card
+        if(screen.getCurrentPlayer().isAI()) {
+            Card c = screen.getCurrentPlayer().pickCard(Card.Types.ROOM);
+            clickCard(c);
         }
     }
 
@@ -541,9 +586,21 @@ public class GameState {
         } else {
             screen.getFont().draw(batch, "Choose a card to show to "+screen.getCurrentPlayer().getCharacter().getName(), 750, 900);
             for(Card c : returncards.keySet()) {
-                Image i = returncards.get(c);
-                i.draw(batch, 50);
-                screen.addActor(i);
+                returncards.get(c).draw(batch, 50);
+            }
+        }
+
+        if(actingPlayer.isAI()) {
+            int randomlyPicked = random.nextInt(returncards.size());
+            int soFar = 0;
+            for(Card c : returncards.keySet()) {
+                if(soFar != randomlyPicked) {
+                    soFar++;
+                    continue;
+                }
+                ClickListener listener = (ClickListener) returncards.get(c).getListeners().get(0);
+                listener.clicked(new InputEvent(), 0, 0);
+                break;
             }
         }
     }
@@ -563,6 +620,21 @@ public class GameState {
     public void renderSeeCard(Batch batch) {
         drawBackground(batch);
         screen.getFont().setColor(Color.WHITE);
+        if(screen.getCurrentPlayer().isAI()) {
+            for(Card c : returncards.keySet()) {
+                if(c.equals(returnCard)) {
+                    screen.getCurrentPlayer().knowCard(c);
+                }
+            }
+        }
+        if(Countdown < 0 || screen.getCurrentPlayer().isAI()) {
+            if(moves < 1 || !reGuessing) {
+                setState(State.ROLLING);
+            } else {
+                setState(State.MOVING);
+            }
+            return;
+        }
         if(isWaiting) {
             screen.getFont().draw(batch, "Current player is: "+screen.getCurrentPlayer().getCharacter().getName()+"\nPress space to continue", 750, 540);
         } else {
@@ -570,19 +642,15 @@ public class GameState {
             returnImage.draw(batch, 50);
             Countdown--;
         }
-        if(Countdown < 0) {
-            if(moves < 1 || !reGuessing) {
-                setState(State.ROLLING);
-            } else {
-                setState(State.MOVING);
-            }
-        }
     }
 
     public void renderShowMurder(Batch batch) {
         drawBackground(batch);
         BitmapFont f = screen.getFont();
         f.setColor(Color.WHITE);
+        if(screen.getCurrentPlayer().isAI()) {
+            isWaiting = false;
+        }
         if(isWaiting) {
             if(guessCorrectly) {
                 f.draw(batch, "Congratulations, you won! The murder cards were:", 608, 900);
@@ -654,5 +722,14 @@ public class GameState {
         drawBackground(batch);
         TextArea notes = screen.getCurrentPlayer().getNotes();
         notes.draw(batch, 50);
+    }
+
+    public HashMap<Card, Image> getCards() {
+        return cards;
+    }
+
+    public void clickCard(Card c) {
+        ClickListener listener = (ClickListener) cards.get(c).getListeners().get(0);
+        listener.clicked(new InputEvent(), 0, 0);
     }
 }

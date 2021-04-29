@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Player {
 
@@ -24,8 +24,17 @@ public class Player {
     private Tile currentSpace;
     // Whether we've accused and got it wrong
     private boolean didAccuse = false;
+    // Our screen
+    private ClueGame screen;
+    // our RNG
+    private Random random = new Random();
+    // Our list of cards we know aren't in the pack
+    private ArrayList<Card> knownCards = new ArrayList<>();
+    // Whether we guessed for 3 cards and got nothing back
+    private boolean doWeKnow = false;
 
-    public Player(Card c, boolean isAI) {
+    public Player(Card c, boolean isAI, ClueGame screen) {
+        this.screen = screen;
         character = c;
         this.isAI = isAI;
         cards = new ArrayList<Card>();
@@ -53,6 +62,7 @@ public class Player {
 
     public void giveCard(Card c) {
         cards.add(c);
+        knownCards.add(c);
     }
 
     public ArrayList<Card> getCards() {
@@ -69,5 +79,46 @@ public class Player {
 
     public TextArea getNotes() {
         return notes;
+    }
+
+    public boolean isAI() {
+        return isAI;
+    }
+
+    public Card pickCard(Card.Types type) {
+        ArrayList<Card> unknownCards = new ArrayList<>();
+
+        if(doWeKnow) {
+            for(Card c : knownCards) {
+                if(c.isType(type)) {
+                    return c;
+                }
+            }
+        }
+
+        for(Card c : screen.getGameState().getCards().keySet()) {
+            if(!knownCards.contains(c) && c.isType(type)) {
+                unknownCards.add(c);
+            }
+        }
+        int randomlyChosen = 0;//random.nextInt(unknownCards.size());
+        return unknownCards.get(randomlyChosen);
+    }
+
+    public boolean doWeAccuse() {
+        return knownCards.size() == cards.size()-3 || doWeKnow;
+    }
+
+    public void knowCard(Card c) {
+        if(!knownCards.contains(c)) {
+            System.out.println(c.getName());
+            knownCards.add(c);
+        }
+    }
+
+    public void weKnowTheCards(ArrayList<Card> guesses) {
+        knownCards.clear();
+        knownCards.addAll(guesses);
+        doWeKnow = true;
     }
 }
