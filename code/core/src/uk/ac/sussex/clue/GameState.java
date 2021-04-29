@@ -153,6 +153,9 @@ public class GameState {
         // dumb stuff
         int index;
         switch(state) {
+            case MOVING:
+                screen.calculateMoves();
+                break;
             case ROLLING:
                 Countdown = 20;
                 reGuessing = false;
@@ -228,6 +231,7 @@ public class GameState {
                         if(p.equals(screen.getCurrentPlayer())) {
                             continue playerLoop;
                         }
+                        isWaiting = false;
                         for(Card c : guesses) {
                             if(p.getCards().contains(c)) {
                                 isWaiting = true;
@@ -365,6 +369,11 @@ public class GameState {
 
     public void renderMoves(Batch batch) {
         screen.getFont().draw(batch, "Moves left: " + moves, 100, 100);
+        Countdown--;
+        if(Countdown < 0) {
+            Countdown = 10;
+            screen.moveAI();
+        }
     }
 
     public void renderChoice(Batch batch) {
@@ -648,7 +657,7 @@ public class GameState {
         drawBackground(batch);
         BitmapFont f = screen.getFont();
         f.setColor(Color.WHITE);
-        if(screen.getCurrentPlayer().isAI()) {
+        if(screen.getCurrentPlayer().isAI() && !guessCorrectly) {
             isWaiting = false;
         }
         if(isWaiting) {

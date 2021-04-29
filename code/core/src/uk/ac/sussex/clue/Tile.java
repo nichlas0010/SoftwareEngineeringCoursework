@@ -7,6 +7,8 @@ public class Tile {
     private Player player;
     // Our ClueGame screen
     protected ClueGame screen;
+    // A list of moves the AI can move from here. This list is temporary and is changed every time the AI needs to move
+    private ArrayList<Tile> aiMoves = new ArrayList<>();
 
     public Tile(ClueGame screen) {
         this.screen = screen;
@@ -52,6 +54,11 @@ public class Tile {
             if(!t.canEnter()) {
                 moves.remove(t);
             }
+            if(Door.class.isInstance(t)) {
+                if(!t.getMoves().contains(this)) {
+                    moves.remove(t);
+                }
+            }
         }
 
         return moves;
@@ -69,5 +76,17 @@ public class Tile {
 
     public void reset() {
         return;
+    }
+
+    public void resetAIMoves() {
+        aiMoves.clear();
+    }
+
+    public void addAIMove(Tile t) {
+        aiMoves.add(t);
+    }
+
+    public ArrayList<Tile> getAiMoves() {
+        return aiMoves;
     }
 }

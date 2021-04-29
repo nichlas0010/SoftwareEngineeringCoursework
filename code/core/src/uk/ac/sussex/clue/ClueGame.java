@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static uk.ac.sussex.clue.GameState.State;
 
@@ -53,6 +54,10 @@ public class ClueGame extends Window {
     private Image backgroundImage = new Image(new Texture(Gdx.files.internal("gameBackground.png")));
     // Whether or not we've begun. Used for resetting tiles after a turn
     private boolean hasBegun = false;
+    // This is an array of tiles that have already been checked by the movement algorithm
+    private ArrayList<Tile> checkedTiles = new ArrayList<>();
+    // This is a list of which tiles we should walk over to get to our target
+    private ArrayList<Tile> path = new ArrayList<>();
 
 
     public ClueGame(String config) {
@@ -120,7 +125,6 @@ public class ClueGame extends Window {
         setupUI();
 
         gameState.setupCards();
-
         currentPlayer = players.get(players.size()-1);
         hasBegun = true;
 
@@ -303,10 +307,6 @@ public class ClueGame extends Window {
         return board;
     }
 
-    public char[][] getNativeBoard() {
-        return nativeBoard;
-    }
-
     public Room getRoomFromType(Card.Rooms room) {
         for(Room r : rooms) {
             if(r.getRoomtype().equals(room)) {
@@ -351,15 +351,6 @@ public class ClueGame extends Window {
         }
         return tiles;
 
-    }
-
-    public Player getPlayerFromCard(Card c) {
-        for(Player p : players) {
-            if(p.getCharacter().equals(c)) {
-                return p;
-            }
-        }
-        return null;
     }
 
     public void movePlayers() {
@@ -591,5 +582,69 @@ public class ClueGame extends Window {
 
     public void exitGame() {
         MainController.instance.setScreen(new Menu());
+    }
+
+    public void calculateMoves() {
+        if(!currentPlayer.isAI()) {
+            return;
+        }
+
+        currentPlayer.pickGoal();
+
+        checkedTiles.clear();
+        path.clear();
+
+        checkedTiles.addAll(currentPlayer.getTile().getMoves());
+        boolean didWeAddAnyTiles = true;
+        for(Tile[] tiles : board) {
+            for(Tile t : tiles) {
+                t.resetAIMoves();
+            }
+        }
+        while(didWeAddAnyTiles) {
+            didWeAddAnyTiles = false;
+
+            ArrayList<Tile> toBeAddedToCheckedTiles = new ArrayList<>();
+            for(Tile t : checkedTiles) {
+                ArrayList<Tile> moves = t.getMoves();
+                for(Tile t2 : moves) {
+                    if(!checkedTiles.contains(t2)) {
+                        t.addAIMove(t2);
+                        toBeAddedToCheckedTiles.add(t2);
+                        didWeAddAnyTiles = true;
+                    }
+                }
+            }
+            checkedTiles.addAll(toBeAddedToCheckedTiles);
+
+        }
+
+        path.add(currentPlayer.getGoal());
+
+        Tile currentSearch = currentPlayer.getGoal();
+        while(!currentPlayer.getTile().getMoves().contains(currentSearch)) {
+            for(Tile[] tiles : board) {
+                for(Tile t : tiles) {
+                    if(t.getAiMoves().contains(currentSearch)) {
+                        path.add(t);
+                        currentSearch = t;
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
+    public void moveAI() {
+        if(currentPlayer.isAI()) {
+            Tile t = path.get(path.size()-1);
+            path.remove(t);
+            t.clicked(currentPlayer);
+        }
     }
 }

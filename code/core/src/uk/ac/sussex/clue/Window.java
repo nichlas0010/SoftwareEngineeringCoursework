@@ -1,7 +1,6 @@
 package uk.ac.sussex.clue;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -11,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class Window extends ScreenAdapter {
     // spritebatch we're using to draw on the screen
     SpriteBatch batch;
-    // Our font
+    // The font all of our text will be drawn with
     BitmapFont font;
 
     public Window() {

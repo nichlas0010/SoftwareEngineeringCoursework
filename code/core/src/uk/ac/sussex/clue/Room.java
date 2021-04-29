@@ -42,6 +42,11 @@ public class Room extends Tile {
         if(isPulled) {
             return;
         }
+
+        if(player.isAI()) {
+            player.enteredRoom();
+        }
+
         screen.getGameState().setState(GameState.State.CHOICE);
     }
 

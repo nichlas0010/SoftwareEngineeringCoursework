@@ -1,5 +1,7 @@
 package uk.ac.sussex.clue;
 
+import java.util.ArrayList;
+
 public class Door extends Tile {
     // the directions our room could be in
     enum directions {
@@ -68,5 +70,13 @@ public class Door extends Tile {
         p.getTile().onLeave();
         onEnter(p, false);
         return;
+    }
+
+    @Override
+    public ArrayList<Tile> getMoves() {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        tiles.add(getOpposite());
+        tiles.add(getRoom());
+        return tiles;
     }
 }

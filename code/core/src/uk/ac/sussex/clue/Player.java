@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -32,6 +33,8 @@ public class Player {
     private ArrayList<Card> knownCards = new ArrayList<>();
     // Whether we guessed for 3 cards and got nothing back
     private boolean doWeKnow = false;
+    // The room we're currently moving towards.
+    private Room goal;
 
     public Player(Card c, boolean isAI, ClueGame screen) {
         this.screen = screen;
@@ -106,12 +109,20 @@ public class Player {
     }
 
     public boolean doWeAccuse() {
-        return knownCards.size() == cards.size()-3 || doWeKnow;
+        if(knownCards.size() == cards.size()-3) {
+            return true;
+        }
+        if(doWeKnow && Room.class.isInstance(currentSpace)) {
+            Room r = (Room) currentSpace;
+            if(knownCards.contains(r.getCard())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void knowCard(Card c) {
-        if(!knownCards.contains(c)) {
-            System.out.println(c.getName());
+        if(!knownCards.contains(c) && !doWeKnow) {
             knownCards.add(c);
         }
     }
@@ -120,5 +131,30 @@ public class Player {
         knownCards.clear();
         knownCards.addAll(guesses);
         doWeKnow = true;
+    }
+
+    public void enteredRoom() {
+        if(goal.equals(currentSpace)) {
+            goal = null;
+        }
+    }
+
+    public void pickGoal() {
+        if(goal != null) {
+            return;
+        }
+
+        ArrayList<Room> roomsToChooseFrom = new ArrayList<>();
+        for(Room r : screen.getRooms()) {
+            if((!knownCards.contains(r.getCard()) && !doWeKnow) || (doWeKnow && knownCards.contains(r.getCard()))) {
+                roomsToChooseFrom.add(r);
+            }
+        }
+
+        goal = roomsToChooseFrom.get(random.nextInt(roomsToChooseFrom.size()));
+    }
+
+    public Room getGoal() {
+        return goal;
     }
 }
