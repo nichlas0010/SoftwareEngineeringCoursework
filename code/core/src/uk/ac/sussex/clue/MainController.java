@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+/**
+ * Our maincontroller, is the class that's in charge of always existing. Is the middleground between different windows
+ */
 public class MainController extends Game {
 
 	// The viewport we're using, see libgdx viewport

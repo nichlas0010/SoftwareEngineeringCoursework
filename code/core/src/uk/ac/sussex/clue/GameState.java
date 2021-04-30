@@ -13,13 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.*;
 
+/**
+ * Our gamestate tracker.
+ *
+ * It keeps track of which state we're in, and makes sure the right things are rendered at the right time
+ */
 public class GameState {
     // Our game
     private ClueGame screen;
@@ -77,53 +80,99 @@ public class GameState {
     private Card returnCard;
 
 
-
+    /**
+     * Constructor. Calls {@link #setupDice()} and {@link #setupGuessAccuse()}
+     * @param screen the screen we use
+     */
     public GameState(ClueGame screen) {
         this.screen = screen;
 
+        // Set up the dice
         setupDice();
 
+        // Set up our guess/accuse buttons
         setupGuessAccuse();
     }
 
 
+    /**
+     * This method renders everything that is based on the state of the game, and is called in {@link ClueGame#render(float)}
+     *
+     * Depending on the state of the game it, will call the other render methods
+     * 
+     * @see {@link #renderDice(Batch)}
+     * @see {@link #renderMoves(Batch)}
+     * @see {@link #renderChoice(Batch)}
+     * @see {@link #renderGuessChar(Batch)}
+     * @see {@link #renderGuessWeapon(Batch)}
+     * @see {@link #renderGuessRoom(Batch)}
+     * @see {@link #renderGuess(Batch)}
+     * @see {@link #renderGiveCard(Batch)}
+     * @see {@link #renderSeeCard(Batch)}
+     * @see {@link #renderShowMurder(Batch)}
+     * @see {@link #renderCardHand(Batch)}
+     * @see {@link #renderJournal(Batch)}
+     */
     public void render() {
         Batch batch = screen.getBatch();
         switch(state) {
             case ROLLING:
+                // If we're rolling, render the dice
                 renderDice(batch);
                 break;
+
+                // If we're moving, render the moves
             case MOVING:
                 renderMoves(batch);
                 break;
+
+                // If we're choosing, render the choice
             case CHOICE:
                 renderChoice(batch);
                 break;
+
+                // If we're guessing a character
             case GUESSCHAR:
                 guesses.clear();
                 renderGuessChar(batch);
                 break;
+
+                // If we're guessing a weapon
             case GUESSWEAPON:
                 renderGuessWeapon(batch);
                 break;
+
+                // If we're guessing a room
             case GUESSROOM:
                 renderGuessRoom(batch);
                 break;
+
+                // If we're showing how we guesses
             case SHOWGUESS:
                 renderGuess(batch);
                 break;
+
+                // If we need to give a card away
             case GIVECARD:
                 renderGiveCard(batch);
                 break;
+
+                // If we just got a card
             case SEECARD:
                 renderSeeCard(batch);
                 break;
+
+                // We accused and need to see the murder cards
             case SEEMURDER:
                 renderShowMurder(batch);
                 break;
+
+                // We're looking at our card hand
             case CARDS:
                 renderCardHand(batch);
                 break;
+
+                // We're looking at our journal
             case JOURNAL:
                 renderJournal(batch);
                 break;
@@ -131,6 +180,10 @@ public class GameState {
 
     }
 
+    /**
+     * Whether or not we can move, based on which gamestate we're in and how many moves we have
+     * @return true if we can move, false otherwise
+     */
     public boolean canMove() {
         if(state.equals(State.MOVING) && moves > 0) {
             moves--;
@@ -139,10 +192,19 @@ public class GameState {
         return false;
     }
 
+    /**
+     * @return The amount of moves left
+     */
     public int getMoves() {
         return moves;
     }
 
+    /**
+     * This function sets the state of this class to be what is supplied to it.
+     *
+     * It then executes whatever's necessary to set that state up
+     * @param state Which state to set the state to
+     */
     public void setState(State state) {
         this.state = state;
         // I hate switches in java.
@@ -154,33 +216,48 @@ public class GameState {
         int index;
         switch(state) {
             case MOVING:
+                // If we're moving, we should calculate all the AI's moves
                 screen.calculateMoves();
                 break;
+
             case ROLLING:
+                // If we're rolling, we set the countdown
                 Countdown = 20;
                 reGuessing = false;
+
+                // And if we're not rerolling we choose the next player
                 if(!reRolling) {
                     screen.nextPlayer();
                 }
+
+                // Well we're done rerolling, add the dice to the screen
                 reRolling = false;
                 hasRolled = false;
                 screen.addActor(die1);
                 screen.addActor(die2);
                 break;
+
             case CHOICE:
+                // Add the guess/accuse buttons as actors
                 screen.addActor(guess);
                 screen.addActor(accuse);
                 break;
+
             case GUESSCHAR:
+                // Remove the guess/accuse buttons
                 guess.remove();
                 accuse.remove();
+
+                // Add all characters as actors
                 for(Card c : cards.keySet()) {
                     if(c.isType(Card.Types.CHARACTER)) {
                         screen.addActor(cards.get(c));
                     }
                 }
                 break;
+
             case GUESSWEAPON:
+                // Remove the other cards, and add all weapon cards
                 for(Card c : cards.keySet()) {
                     if(c.isType(Card.Types.WEAPON)) {
                         screen.addActor(cards.get(c));
@@ -189,7 +266,9 @@ public class GameState {
                     }
                 }
                 break;
+
             case GUESSROOM:
+                // Remove the other cards and add all the room cards
                 for(Card c : cards.keySet()) {
                     if(c.isType(Card.Types.ROOM)) {
                         screen.addActor(cards.get(c));
@@ -205,12 +284,16 @@ public class GameState {
                 // otherwise we need to actually let them guess *urgh*
                 }
                 break;
+
             case SHOWGUESS:
+                // Remove ALL cards from the stage
                 for(Card c : cards.keySet()) {
                     cards.get(c).remove();
                 }
+                // Set the countdown to 20 seconds-ish
                 Countdown = 200;
                 guessImages.clear();
+                // Render every guess we've made as an image
                 for(Card c : guesses) {
                     Image i = new Image(c.getImage());
                     i.setY(540);
@@ -220,12 +303,17 @@ public class GameState {
                     guessImages.add(i);
                 }
                 break;
+
             case DONEGUESSING:
+                // Move the player we're accusing into the room
                 screen.movePlayer(guesses.get(0));
                 if(isAccusing) {
+                    // If we're accusing, just go straight to the murder section
                     setState(State.SEEMURDER);
                     break;
                 } else {
+                    // Otherwise, loop through all the other players
+                    // Until you find someone who has the card we're looking for
                     playerLoop: for(int i = 0; i < screen.getPlayers().size(); i++) {
                         Player p = screen.getPlayers().get((screen.getPlayers().indexOf(screen.getCurrentPlayer())+i) % screen.getPlayers().size());
                         if(p.equals(screen.getCurrentPlayer())) {
@@ -241,10 +329,14 @@ public class GameState {
                         }
                     }
 
+                    // We found the card, let's have them give it to us
                     if(isWaiting) {
                         setState(State.GIVECARD);
+
+                    // We didn't find the card,
                     } else {
                         if(screen.getCurrentPlayer().isAI()) {
+                            // If we didn't get any cards, we know we guessed right
                             screen.getCurrentPlayer().weKnowTheCards(guesses);
                         }
                         if(reGuessing && moves > 0) {
@@ -256,7 +348,9 @@ public class GameState {
 
                 }
                 break;
+
             case SEEMURDER:
+                // We guessed, so now we get to witness the murder
                 Countdown = 200;
                 screen.getCurrentPlayer().setDidAccuse(true);
                 guessCorrectly = true;

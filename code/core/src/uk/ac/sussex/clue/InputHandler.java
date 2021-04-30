@@ -1,8 +1,10 @@
 package uk.ac.sussex.clue;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+/**
+ * Our inputhandler, which sends input to the MainController if need be
+ */
 public class InputHandler extends Stage {
 
     /**
@@ -21,16 +23,5 @@ public class InputHandler extends Stage {
     public boolean keyDown (int keycode) {
         MainController.instance.keyDown(keycode);
         return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //int height = Gdx.graphics.getHeight();
-        //int width = Gdx.graphics.getWidth();
-        //System.out.println(screenX);
-        //System.out.println(width);
-        //System.out.println(screenY);
-        //System.out.println(height);
-        return super.touchDown(screenX, screenY, pointer, button);
     }
 }
