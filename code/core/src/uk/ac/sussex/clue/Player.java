@@ -104,7 +104,7 @@ public class Player {
                 unknownCards.add(c);
             }
         }
-        int randomlyChosen = 0;//random.nextInt(unknownCards.size());
+        int randomlyChosen = random.nextInt(unknownCards.size());
         return unknownCards.get(randomlyChosen);
     }
 
